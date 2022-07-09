@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Surviv.io input replay recorder
 // @namespace    https://github.com/notKaiAnderson/
-// @version      1.0.0
+// @version      1.0.1
 // @description   Records lightweight game recordings, which can be reviewed with any custom mods applied
 // @author       garlic
 // @match        *://surviv.io/*
@@ -22,7 +22,6 @@
 // @match        *://rarepotato.com/*
 // @grant        none
 // @icon         https://i.imgur.com/jgHdTYA.png
-// @run-at       document-end
 // @license      MIT
 // ==/UserScript==
 
@@ -46,29 +45,22 @@ try {
 window.zzpseudoalert = function (e) {
 	var x = document.createElement("div");
 	x.style =
-		"zIndex:255;position:absolute;left:30%; width:40%;top:10%;height:25%;opacity:0.5;background-color:blue;color:yellow;text-align:center;";
+		"zIndex:255;position:fixed;left:50%;width:40%;top:20%;height:fit-content;background-color:rgba(0,0,0,.5);color:#e4d338;text-align:center;border-radius:10px;padding:10px 20px;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);";
 	x.innerHTML = e;
 	document.body.append(x);
 	x.style.fontSize = "20px";
-	setTimeout(() => {
-		x.style.opacity = 1;
-	}, 200);
-	setTimeout(() => {
-		x.style.opacity = 0.7;
-	}, 700);
-	setTimeout(() => {
-		x.style.opacity = 0.3;
-	}, 850);
-	setTimeout(() => document.body.removeChild(x), 1000);
+	x.animate([{ opacity: "1" }, { opacity: "0" }], { duration: 3000 });
+	setTimeout(() => document.body.removeChild(x), 3000);
 };
 window.zzpseudoalert.small = function (e) {
 	var x = document.createElement("div");
 	x.style =
-		"zIndex:255;position:absolute;left:45%; width:10%;top:10%;height:14%;opacity:0.4;background-color:blue;color:yellow;text-align:center;";
+		"zIndex:255;position:fixed;left:50%;width:40%;top:20%;height:fit-content;background-color:rgba(0,0,0,.5);color:#e4d338;text-align:center;border-radius:10px;padding:10px 20px;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);";
 	x.innerHTML = e;
 	document.body.append(x);
 	x.style.fontSize = "20px";
-	setTimeout(() => document.body.removeChild(x), 1000);
+	x.animate([{ opacity: "1" }, { opacity: "0" }], { duration: 3000 });
+	setTimeout(() => document.body.removeChild(x), 3000);
 };
 zzpseudoalert("wsrapper init");
 
@@ -300,9 +292,16 @@ window.foo = function () {
 
 	function tabuntab() {
 		if (!xpassblock) return;
+		if (document.getElementById("missions-name").style.display === "none") {
+			document.getElementById("missions-name").style = "display:block";
+			document.getElementById("pass-quest-wrapper").style = "display:block";
+		} else {
+			document.getElementById("missions-name").style = "display:none";
+			document.getElementById("pass-quest-wrapper").style = "display:none";
+		}
 		if (x.parentElement.id == "pass-block") {
 			window.zzpseudoalert("FUG");
-			x.otherwindow = window.open("", "");
+			x.otherwindow = window.open("", "", "height=250,width=300");
 			x.otherwindow.document.body.append(x);
 		} else {
 			xpassblock.insertBefore(x, xpassblock.firstElementChild);
@@ -398,8 +397,18 @@ window.foo = function () {
 
 	var tt = document.createElement("select");
 	tt.id = "modepl";
-	tt.style =
-		"background: rgb(122, 122, 122); box-shadow: rgb(62, 62, 62) 0px -3px inset; color: rgb(255, 255, 255); cursor: pointer; width: 45%; border: none; border-radius: 5px; font-size: 18px; padding: 10px 20px; text-align: center;";
+	tt.style = `
+      background: rgb(122, 122, 122);
+      box-shadow: rgb(62 62 62) 0px -3px inset;
+      color: rgb(255, 255, 255);
+      cursor: pointer;
+      width: 30%;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      padding: 10px 20px;
+      text-align: center;
+    `;
 	tt.innerHTML =
 		"<option>Record</option><option>Replay recent</option><option>Replay from file</option><option>Replay from prompt</option><option>Tab/untab</option><option>save har log</option>";
 	let captt = tt;
@@ -407,16 +416,43 @@ window.foo = function () {
 	tt.onclick = (e) => selmodech(captt, e, "click");
 	x.appendChild(tt);
 
-	var tt = document.createElement("input");
-	tt.type = "button";
-	tt.value = "Tab/untab";
-	tt.style =
-		"background: rgb(230, 80, 79); box-shadow: rgb(140, 40, 40) 0px -3px inset; color: rgb(255, 255, 255); cursor: pointer; width: 45%; border-top: none; border-radius: 5px; border-right: none; border-left: none; font-size: 18px; padding: 11px 20px; position: absolute; right: 20px;";
+	var tt = document.createElement("button");
+	tt.style = `
+      background-image: url(https://surviv.io/img/gui/link.svg);
+      background-size: 27px;
+      background-repeat: no-repeat;
+      background-position: center 42%;
+      width: 20%;
+      height: 45px;
+      position: absolute;
+      background-color: #cd3232;
+      box-shadow: #781e0a 0px -4px inset;
+      color: #fff;
+      cursor: pointer;
+      text-shadow: rgb(0 0 0 / 25%) 0px 1px 2px;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      margin: 0 0 0 3px;
+    `;
 	tt.onclick = tabuntab;
 	x.appendChild(tt);
 
 	var tt = document.createElement("button");
-	tt.value = "Unlink last game";
+	tt.innerHTML = "unlink & record";
+	tt.style = `
+      height: 45px;
+      background-color: rgb(205, 50, 50);
+      box-shadow: rgb(120 30 10) 0px -4px inset;
+      color: rgb(255, 255, 255);
+      cursor: pointer;
+      text-shadow: rgb(0 0 0 / 25%) 0px 1px 2px;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      margin: 0 20px 0 66px;
+      position: absolute;
+    `;
 	tt.onclick = unlinkfromUI;
 	x.appendChild(tt);
 
@@ -424,10 +460,29 @@ window.foo = function () {
 	tt.id = "xyz";
 	tt.style =
 		"background: rgb(122, 122, 122); box-shadow: rgb(62, 62, 62) 0px -2px inset; color: rgb(255, 255, 255); cursor: pointer; width: 100%; border: none; border-radius: 5px; font-size: 18px; padding: 5px 20px; margin: 5px 0px;";
+	tt.style = `
+      width: 100%;
+      height: 45px;
+      background-color: #7a7a7a;
+      box-shadow: #3e3e3e 0px -4px inset;
+      color: #fff;
+      cursor: pointer;
+      text-shadow: rgb(0 0 0 / 25%) 0px 1px 2px;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      margin: 3px 0 3px 0;
+    `;
 	x.appendChild(tt);
 	var t = document.createElement("input");
 	t.type = "file";
-	t.style = "position: absolute;margin-top: -35px;opacity: 0;cursor: pointer;";
+	t.style = `
+      position: absolute;
+      margin: 62px 0 0 -126px;
+      opacity: 0;
+      cursor: pointer;
+      transform: scale(2);
+    `;
 	t.multiple = true;
 	t.accept = ".har";
 	t.id = "ssk";
