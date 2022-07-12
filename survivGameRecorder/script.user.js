@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Surviv.io input replay recorder
 // @namespace    https://github.com/notKaiAnderson/
-// @version      1.0.1
+// @version      1.0.2
 // @description   Records lightweight game recordings, which can be reviewed with any custom mods applied
 // @author       garlic
 // @match        *://surviv.io/*
@@ -31,6 +31,7 @@
  * preacher
  ***/
 
+var survivharplayerconfig = { silly1: false };
 var ifsurviv = false;
 if (window.zzpseudoalert && window.log) {
 	window.zzpseudoalert("already active");
@@ -345,6 +346,17 @@ window.foo = function () {
 			if (tt.selectedIndex == 5) {
 				saveharlog();
 			}
+			if (tt.selectedIndex == 6) {
+				if (
+					(survivharplayerconfig.silly1 = !survivharplayerconfig.silly1) ===
+					false
+				) {
+					dosomething_with_send_disable();
+					window.zzpseudoalert("silly pseudo 3d is now: DISABLED");
+				} else {
+					window.zzpseudoalert("silly pseudo 3d is now: ENABLED");
+				}
+			}
 			if (tt.selectedIndex == 0) {
 				if (window.WebSocket.name == "ReplayWebSocket")
 					window.WebSocket = RecordingWebSocket;
@@ -410,7 +422,7 @@ window.foo = function () {
       text-align: center;
     `;
 	tt.innerHTML =
-		"<option>Record</option><option>Replay recent</option><option>Replay from file</option><option>Replay from prompt</option><option>Tab/untab</option><option>save har log</option>";
+		"<option>Record</option><option>Replay recent</option><option>Replay from file</option><option>Replay from prompt</option><option>Tab/untab</option><option>save har log</option><option>silly 3d toggle</option>";
 	let captt = tt;
 	tt.onchange = (e) => selmodech(captt, e, "change");
 	tt.onclick = (e) => selmodech(captt, e, "click");
@@ -503,6 +515,7 @@ window.foo = function () {
 	tt.onchange = function () {
 		harRead.selected = tt.value;
 	};
+
 	let applySVGtext = function (nam, jo) {
 		let ii = nam.indexOf("---");
 		if (ii >= 0) nam = nam.slice(0, ii);
@@ -602,6 +615,44 @@ if (document.readyState === "complete" || document.readyState === "interactive")
 	foo();
 else window.addEventListener("DOMContentLoaded", foo);
 
+function dosomething_with_send_disable() {
+	cvs.style.transform = "";
+}
+
+function dosomething_with_send(e) {
+	if (survivharplayerconfig.silly1 != true) return;
+
+	let survivOneEps = 1.0001;
+	function delerpOne10(e) {
+		return (-1 + 2 * (e / 1023)) * survivOneEps;
+	}
+
+	let x = from_base64s(e);
+	console.info(x);
+	try {
+		let i = 3 + 3 * !!(x[2] & 0x80);
+		let xdiv, ydiv;
+		xdiv = x[i] + (x[i + 1] & 3) * 256;
+		ydiv = (x[i + 1] >> 2) + (x[i + 2] & 15) * 64;
+		xdiv = delerpOne10(xdiv);
+		ydiv = delerpOne10(ydiv);
+
+		let az = Math.atan2(xdiv, ydiv);
+		let cs = Math.cos(az);
+		let sn = Math.sin(az);
+		let pz = 0.9;
+		let cz = Math.cos(pz);
+		let zn = Math.sin(pz);
+		cvs.style.transform = `perspective(800px) matrix3d(${cs}, ${-sn * cz}, ${
+			-sn * zn
+		}, 0,  ${sn}, ${cs * cz}, ${
+			cs * zn
+		}, 0, 0, ${-zn}, ${cz}, 0, 0, 0, 0  , 1)`;
+	} catch (e) {
+		console.error(e);
+	}
+}
+
 function from_base64s(base64) {
 	var raw = atob(base64);
 	var rawLength = raw.length;
@@ -683,6 +734,9 @@ if (1 && "weboverload") {
 		nextmsg: function () {
 			while (++this.wsi < this.wslen) {
 				if (this.wso[this.wsi].type == "receive") break;
+				else if (this.wso[this.wsi].type == "send") {
+					dosomething_with_send(this.wso[this.wsi].data);
+				}
 			}
 			if (this.wsi >= this.wslen) return false;
 			var a1 = this.wso[this.wsi];
