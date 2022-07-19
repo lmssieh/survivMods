@@ -1,9 +1,10 @@
 // ==UserScript==
 // @name         Surviv.io input replay recorder
 // @namespace    https://github.com/notKaiAnderson/
-// @version      1.0.2
+// @version      1.0.3
 // @description   Records lightweight game recordings, which can be reviewed with any custom mods applied
 // @author       garlic
+// @match        *://snake.io/
 // @match        *://surviv.io/*
 // @match        *://surviv2.io/*
 // @match        *://2dbattleroyale.com/*
@@ -285,6 +286,7 @@ window.harRead = {
 	files: [],
 	games: {},
 	alert: window.alert.bind(window),
+	ui: { window: window },
 };
 window.foo = function () {
 	function unlinkfromUI() {
@@ -304,8 +306,10 @@ window.foo = function () {
 			window.zzpseudoalert("FUG");
 			x.otherwindow = window.open("", "", "height=250,width=300");
 			x.otherwindow.document.body.append(x);
+			window.harRead.ui.window = x.otherwindow;
 		} else {
 			xpassblock.insertBefore(x, xpassblock.firstElementChild);
+			window.harRead.ui.window = window;
 			x.otherwindow.close();
 		}
 	}
@@ -345,6 +349,8 @@ window.foo = function () {
 			}
 			if (tt.selectedIndex == 5) {
 				saveharlog();
+				tt.selectedIndex = tt.prevselectedIndex;
+				return;
 			}
 			if (tt.selectedIndex == 6) {
 				if (
@@ -356,7 +362,10 @@ window.foo = function () {
 				} else {
 					window.zzpseudoalert("silly pseudo 3d is now: ENABLED");
 				}
+				tt.selectedIndex = tt.prevselectedIndex;
+				return;
 			}
+			tt.prevselectedIndex = tt.selectedIndex;
 			if (tt.selectedIndex == 0) {
 				if (window.WebSocket.name == "ReplayWebSocket")
 					window.WebSocket = RecordingWebSocket;
@@ -368,7 +377,9 @@ window.foo = function () {
 				applyParsedHarFile(log);
 			}
 			if (tt.value == "Replay from prompt") {
-				let pp = prompt("input har file, or http/file address");
+				let pp = window.harRead.ui.window.prompt(
+					"input har file, or http/file address"
+				);
 				let done = false;
 				if (
 					pp.startsWith("file://") ||
@@ -470,6 +481,7 @@ window.foo = function () {
 
 	var tt = document.createElement("select");
 	tt.id = "xyz";
+	window.harRead.ui.matchSelectorComboBox = tt;
 	tt.style =
 		"background: rgb(122, 122, 122); box-shadow: rgb(62, 62, 62) 0px -2px inset; color: rgb(255, 255, 255); cursor: pointer; width: 100%; border: none; border-radius: 5px; font-size: 18px; padding: 5px 20px; margin: 5px 0px;";
 	tt.style = `
@@ -553,8 +565,11 @@ window.foo = function () {
 					var ww = x.request.url;
 					var w0 = ww.lastIndexOf("=");
 					var wi = ww.lastIndexOf("=");
-					if (w0 >= 0 || wi >= 0) {
-						var output = time + " " + ww.slice(6, 6 + 9) + ww.slice(wi);
+
+					if (w0 >= 0 || wi >= 0 || ww.includes(".snake.io:9092")) {
+						var output = time;
+						if (w0 >= 0 || wi >= 0)
+							output += " " + ww.slice(6, 6 + 9) + ww.slice(wi);
 						var qi = document.createElement("option");
 						qi.value = ectr;
 						qi.innerHTML = output + "";
@@ -687,9 +702,9 @@ if (1 && "weboverload") {
 			this.url = a;
 			this.__type = "echo";
 			setTimeout(() => this.__onopen(), 100);
-		} else if (a.indexOf("?gameId=") >= 0) {
+		} else if (a.includes("?gameId=") || a.includes(".snake.io:9092")) {
 			this.__type = "game";
-			this.wsh = harRead.games[document.getElementById("xyz").value];
+			this.wsh = harRead.games[window.harRead.ui.matchSelectorComboBox.value];
 			this.wso = this.wsh["_webSocketMessages"];
 			this.wslen = this.wso.length;
 			this.wsi = 0;
