@@ -2,7 +2,7 @@
 // @name         Surviv.io input replay recorder
 // @namespace    https://github.com/notKaiAnderson/
 // @version      1.0.2
-// @description   Records lightweight game recordings, which can be reviewed with any custom mods applied
+// @description  Records lightweight game recordings, which can be reviewed with any custom mods applied
 // @author       garlic
 // @match        *://surviv.io/*
 // @match        *://surviv2.io/*
@@ -407,6 +407,10 @@ window.foo = function () {
 		xpassblock.insertBefore(x, xpassblock.firstElementChild);
 	}
 
+	var mn = document.createElement("div");
+	mn.style = "display:inline-flex;width:100%";
+	x.insertBefore(mn, x.firstElementChild);
+
 	var tt = document.createElement("select");
 	tt.id = "modepl";
 	tt.style = `
@@ -414,7 +418,7 @@ window.foo = function () {
       box-shadow: rgb(62 62 62) 0px -3px inset;
       color: rgb(255, 255, 255);
       cursor: pointer;
-      width: 30%;
+      width: 100%;
       border: none;
       border-radius: 5px;
       font-size: 18px;
@@ -434,9 +438,8 @@ window.foo = function () {
       background-size: 27px;
       background-repeat: no-repeat;
       background-position: center 42%;
-      width: 20%;
+      width: 100%;
       height: 45px;
-      position: absolute;
       background-color: #cd3232;
       box-shadow: #781e0a 0px -4px inset;
       color: #fff;
@@ -445,10 +448,10 @@ window.foo = function () {
       border: none;
       border-radius: 5px;
       font-size: 18px;
-      margin: 0 0 0 3px;
+      margin: 0 3px 0 0;
     `;
 	tt.onclick = tabuntab;
-	x.appendChild(tt);
+	mn.appendChild(tt);
 
 	var tt = document.createElement("button");
 	tt.innerHTML = "unlink & record";
@@ -462,11 +465,10 @@ window.foo = function () {
       border: none;
       border-radius: 5px;
       font-size: 18px;
-      margin: 0 20px 0 66px;
-      position: absolute;
+      width:300%;
     `;
 	tt.onclick = unlinkfromUI;
-	x.appendChild(tt);
+	mn.appendChild(tt);
 
 	var tt = document.createElement("select");
 	tt.id = "xyz";
