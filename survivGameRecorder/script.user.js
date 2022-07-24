@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Surviv.io input replay recorder
 // @namespace    https://github.com/notKaiAnderson/
-// @version      1.0.3
+// @version      1.0.4
 // @description  Records lightweight game recordings, which can be reviewed with any custom mods applied
 // @author       garlic
 // @match        *://snake.io/
@@ -791,3 +791,19 @@ if (1 && "weboverload") {
 	};
 	("window.WebSocket = ReplayWebSocket");
 }
+
+let oraf=window.requestAnimationFrame;
+let wast=undefined;
+
+window.requestAnimationFrame=function(user) {
+	let temp=user;
+	function mymethod(x) {
+		if(wast==undefined) { wast=x; return user.call(this,x); }
+		let tea=(window.slowmo??1);
+		if(window.WebSocket.name!="ReplayWebSocket") tea=1;
+
+		return user.call(this,/*(x-wast)*(window.slowmo??1) + wast*/(x-wast)*tea );
+	};
+	oraf.call(this,mymethod);
+};
+
