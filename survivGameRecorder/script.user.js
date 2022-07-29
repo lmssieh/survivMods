@@ -238,7 +238,7 @@ RecordingWebSocket.unlink = function () {
 
 window.WebSocket = RecordingWebSocket;
 
-let cconsole = console.log;
+let cconsole = console.info;
 Object.defineProperty(console, "log", {
 	configurable: true,
 	get: function () {
