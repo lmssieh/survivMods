@@ -31,6 +31,53 @@
  * preacher
  ***/
 
+// styles
+
+var toConsole = (val) => console.info(val);
+window.enableConsole = function () {
+	let cconsole = console.info;
+	Object.defineProperty(console, "log", {
+		configurable: true,
+		get: function () {
+			return cconsole;
+		},
+		set: function (e) {},
+	});
+};
+
+var css = `
+#left-column, #missions-wrapper, #pass-block {
+	height: 100%;
+} 
+#free-gp-offer, {
+	display: none !important ;
+}
+.custom-file-input::-webkit-file-upload-button {
+  visibility: hidden;
+}
+
+.tabuntab {
+	background-image: url(https://surviv.io/img/gui/link.svg);
+	background-size: 27px;
+	background-repeat: no-repeat;
+	background-position: center 42%;
+	width: 20%;
+	height: 45px;
+	position: absolute;
+	background-color: #cd3232;
+	box-shadow: #781e0a 0px -4px inset;
+	color: #fff;
+	cursor: pointer;
+	text-shadow: rgb(0 0 0 / 25%) 0px 1px 2px;
+	border: none;
+	border-radius: 5px;
+	font-size: 18px;
+	margin: 0 0 0 3px;
+}
+`;
+
+document.head.innerHTMl += `<style>${css}</style>`;
+
 var survivharplayerconfig = { silly1: false };
 var ifsurviv = false;
 if (window.zzpseudoalert && window.log) {
@@ -246,17 +293,7 @@ RecordingWebSocket.unlink = function () {
 
 window.WebSocket = RecordingWebSocket;
 
-void "surviv .har repeat script. new103. open up at surviv.io, load .har file. f1f2f3f6 -- change replay speed";
-{
-	let cconsole = console.log;
-	Object.defineProperty(console, "log", {
-		configurable: true,
-		get: function () {
-			return cconsole;
-		},
-		set: function (e) {},
-	});
-}
+// void "surviv .har repeat script. new103. open up at surviv.io, load .har file. f1f2f3f6 -- change replay speed";
 (function () {
 	"use strict";
 	let cycle = (x) => (x == false ? undefined : x == undefined);
@@ -287,11 +324,11 @@ window.harRead = {
 	alert: window.alert.bind(window),
 };
 window.foo = function () {
-	function unlinkfromUI() {
+	window.unlinkfromUI = function () {
 		RecordingWebSocket.unlink();
-	}
+	};
 
-	function tabuntab() {
+	window.tabuntab = function () {
 		if (!xpassblock) return;
 		if (document.getElementById("missions-name").style.display === "none") {
 			document.getElementById("missions-name").style = "display:block";
@@ -300,7 +337,8 @@ window.foo = function () {
 			document.getElementById("missions-name").style = "display:none";
 			document.getElementById("pass-quest-wrapper").style = "display:none";
 		}
-		if (x.parentElement.id == "pass-block") {
+		console.log(x);
+		if (xpassblock) {
 			window.zzpseudoalert("FUG");
 			x.otherwindow = window.open("", "", "height=250,width=300");
 			x.otherwindow.document.body.append(x);
@@ -308,7 +346,7 @@ window.foo = function () {
 			xpassblock.insertBefore(x, xpassblock.firstElementChild);
 			x.otherwindow.close();
 		}
-	}
+	};
 
 	function saveharlog() {
 		0,
@@ -407,115 +445,56 @@ window.foo = function () {
 		xpassblock.insertBefore(x, xpassblock.firstElementChild);
 	}
 
-	var tt = document.createElement("select");
-	tt.id = "modepl";
-	tt.style = `
-      background: rgb(122, 122, 122);
-      box-shadow: rgb(62 62 62) 0px -3px inset;
-      color: rgb(255, 255, 255);
-      cursor: pointer;
-      width: 30%;
-      border: none;
-      border-radius: 5px;
-      font-size: 18px;
-      padding: 10px 20px;
-      text-align: center;
-    `;
-	tt.innerHTML =
-		"<option>Record</option><option>Replay recent</option><option>Replay from file</option><option>Replay from prompt</option><option>Tab/untab</option><option>save har log</option><option>silly 3d toggle</option>";
-	let captt = tt;
-	tt.onchange = (e) => selmodech(captt, e, "change");
-	tt.onclick = (e) => selmodech(captt, e, "click");
-	x.appendChild(tt);
+	var html = `
+	<div style="display: flex; color: white;">
+	<button class="tabuntab btn-mode-desert right-play-btn" onclick="tabuntab" style="width: 30% !important;     padding: 0 0.3em;	">untab</button>
+	<button class="btn-mode-desert right-play-btn" onclick="unlinkfromUI" style="flex: 1; 
+	padding: 0 0.3em;	">unlick & record</button>
+	</div>
+	<select id="modepl" class="right-play-btn" style="background-color: rgb(122, 122, 122);
+	 padding: 0; color: white; margin: 0.3em 0;">
+	<option>Record</option><option>Replay recent</option><option>Replay from file</option><option>Replay from prompt</option><option>Tab/untab</option><option>save har log</option><option>silly 3d toggle</option>
+	</select>
+	<select id="xyz" class="right-play-btn" style="background-color: rgb(122, 122, 122);
+	 padding: 0; color: white;">
+	</select>
+	<div>
+	<input type="checkbox" id="toggleSillyEffect" />
+	<label>apply silly 3d effect</label>
+	</div>
+		<div class="file-input">
+			<input type="file" id="ssk" multiple accept=".har" style="display:none; margin-top: 7px;">
+			<label for="file" class="btn-team-option menu-option" style="font-size: 1.3em;">Select file</label>
+		</div>
+	`;
+	xpassblock.innerHTML += html;
 
-	var tt = document.createElement("button");
-	tt.style = `
-      background-image: url(https://surviv.io/img/gui/link.svg);
-      background-size: 27px;
-      background-repeat: no-repeat;
-      background-position: center 42%;
-      width: 20%;
-      height: 45px;
-      position: absolute;
-      background-color: #cd3232;
-      box-shadow: #781e0a 0px -4px inset;
-      color: #fff;
-      cursor: pointer;
-      text-shadow: rgb(0 0 0 / 25%) 0px 1px 2px;
-      border: none;
-      border-radius: 5px;
-      font-size: 18px;
-      margin: 0 0 0 3px;
-    `;
-	tt.onclick = tabuntab;
-	x.appendChild(tt);
-
-	var tt = document.createElement("button");
-	tt.innerHTML = "unlink & record";
-	tt.style = `
-      height: 45px;
-      background-color: rgb(205, 50, 50);
-      box-shadow: rgb(120 30 10) 0px -4px inset;
-      color: rgb(255, 255, 255);
-      cursor: pointer;
-      text-shadow: rgb(0 0 0 / 25%) 0px 1px 2px;
-      border: none;
-      border-radius: 5px;
-      font-size: 18px;
-      margin: 0 20px 0 66px;
-      position: absolute;
-    `;
-	tt.onclick = unlinkfromUI;
-	x.appendChild(tt);
-
-	var tt = document.createElement("select");
-	tt.id = "xyz";
-	tt.style =
-		"background: rgb(122, 122, 122); box-shadow: rgb(62, 62, 62) 0px -2px inset; color: rgb(255, 255, 255); cursor: pointer; width: 100%; border: none; border-radius: 5px; font-size: 18px; padding: 5px 20px; margin: 5px 0px;";
-	tt.style = `
-      width: 100%;
-      height: 45px;
-      background-color: #7a7a7a;
-      box-shadow: #3e3e3e 0px -4px inset;
-      color: #fff;
-      cursor: pointer;
-      text-shadow: rgb(0 0 0 / 25%) 0px 1px 2px;
-      border: none;
-      border-radius: 5px;
-      font-size: 18px;
-      margin: 3px 0 3px 0;
-    `;
-	x.appendChild(tt);
-	var t = document.createElement("input");
-	t.type = "file";
-	t.style = `
-      position: absolute;
-      margin: 62px 0 0 -126px;
-      opacity: 0;
-      cursor: pointer;
-      transform: scale(2);
-    `;
-	t.multiple = true;
-	t.accept = ".har";
-	t.id = "ssk";
-	x.appendChild(t);
 	if (ifsurviv) {
 		document.getElementById("missions-name").style = "display:none";
 		document.getElementById("pass-quest-wrapper").style = "display:none";
 	}
-	var skk = document.createElement("button");
-	skk.id = "skk";
-	skk.onclick = function () {
-		document.getElementById("ssk").click();
-	};
-	skk.innerHTML = "Choose file";
-	skk.style =
-		"background: rgb(30, 144, 255);box-shadow: rgb(24, 113, 200) 0px -5px inset;color: rgb(255, 255, 255);cursor: pointer;text-shadow: rgba(0, 0, 0, 0.25) 0px 1px 2px;font-weight: 700;width: 100%;border: none;border-radius: 5px;padding: 12px 20px;font-size: 18px;";
-	x.appendChild(skk);
-	tt.onchange = function () {
-		harRead.selected = tt.value;
+
+	var selectOptionsEle = document.querySelector("#modepl");
+	selectOptionsEle.onchange = (e) => selmodech(selectOptionsEle, e, "change");
+	selectOptionsEle.onclick = (e) => selmodech(selectOptionsEle, e, "click");
+
+	var selectHarGameEle = document.querySelector("#xyz");
+	selectHarGameEle.onchange = function () {
+		harRead.selected = selectHarGameEle.value;
 	};
 
+	var toggleSillyEffect = document.querySelector("#toggleSillyEffect");
+	toggleSillyEffect.onchange = (e) => {
+		toConsole(toggleSillyEffect.checked, survivharplayerconfig.silly1);
+		console.log(toggleSillyEffect.checked, survivharplayerconfig.silly1);
+		// toConsole((survivharplayerconfig.silly1 = !survivharplayerconfig.silly1));
+		if (toggleSillyEffect.checked) {
+			window.zzpseudoalert("silly pseudo 3d is now: ENABLED");
+		} else {
+			dosomething_with_send_disable();
+			window.zzpseudoalert("silly pseudo 3d is now: DISABLED");
+		}
+	};
 	let applySVGtext = function (nam, jo) {
 		let ii = nam.indexOf("---");
 		if (ii >= 0) nam = nam.slice(0, ii);
@@ -535,7 +514,7 @@ window.foo = function () {
 		window.harRead.games = {};
 
 		window.harRead.files.push(jo);
-		tt.innerHTML = "";
+		// tt.innerHTML = "";
 		if (1) {
 			var ectr = 0;
 			jo.log.entries.forEach((x) => {
@@ -558,7 +537,7 @@ window.foo = function () {
 						var qi = document.createElement("option");
 						qi.value = ectr;
 						qi.innerHTML = output + "";
-						tt.appendChild(qi);
+						selectHarGameEle.appendChild(qi);
 						harRead.games[ectr] = x;
 					}
 				}
@@ -566,6 +545,7 @@ window.foo = function () {
 			});
 		}
 	};
+	var t = document.querySelector("#ssk");
 	t.onchange = function handleFileSelect1(evt) {
 		var filesreset = false;
 		tt.innerHTML = "<option>loading...</option>";
@@ -614,6 +594,7 @@ window.foo = function () {
 if (document.readyState === "complete" || document.readyState === "interactive")
 	foo();
 else window.addEventListener("DOMContentLoaded", foo);
+window.enableConsole();
 
 function dosomething_with_send_disable() {
 	cvs.style.transform = "";
@@ -774,3 +755,5 @@ if (1 && "weboverload") {
 	};
 	("window.WebSocket = ReplayWebSocket");
 }
+
+window.enableConsole();
