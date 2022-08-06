@@ -54,16 +54,7 @@ window.zzpseudoalert = function (e) {
 	x.animate([{ opacity: "1" }, { opacity: "0" }], { duration: 3000 });
 	setTimeout(() => document.body.removeChild(x), 3000);
 };
-window.zzpseudoalert.small = function (e) {
-	var x = document.createElement("div");
-	x.style =
-		"zIndex:255;position:fixed;left:50%;width:40%;top:20%;height:fit-content;background-color:rgba(0,0,0,.5);color:#e4d338;text-align:center;border-radius:10px;padding:10px 20px;-webkit-transform: translate(-50%, -50%);transform: translate(-50%, -50%);";
-	x.innerHTML = e;
-	document.body.append(x);
-	x.style.fontSize = "20px";
-	x.animate([{ opacity: "1" }, { opacity: "0" }], { duration: 3000 });
-	setTimeout(() => document.body.removeChild(x), 3000);
-};
+
 zzpseudoalert("wsrapper init");
 
 function arrayBufferToBase64(buffer) {
@@ -149,16 +140,16 @@ class RecordingWebSocket extends WebSocket {
 				a[5] = 8;
 			}
 			oldsend.apply(thisArg, [a]);
-			console.info("tick", seq);
+			console.log("tick", seq);
 		}
 
 		var keepAliveIt = setInterval(() => keepAlive(), 1017);
-		console.info("unlink toggled", seq);
+		console.log("unlink toggled", seq);
 		this.onerror = () => {};
 		this.onclose();
 		this.onclose = () => {
 			clearInterval(keepAliveIt);
-			console.info("unlinked conn closed");
+			console.log("unlinked conn closed");
 		};
 		this.__spy_onmessage = () => {};
 		return true;
@@ -247,17 +238,15 @@ RecordingWebSocket.unlink = function () {
 
 window.WebSocket = RecordingWebSocket;
 
-void "surviv .har repeat script. new103. open up at surviv.io, load .har file. f1f2f3f6 -- change replay speed";
-{
-	let cconsole = console.log;
-	Object.defineProperty(console, "log", {
-		configurable: true,
-		get: function () {
-			return cconsole;
-		},
-		set: function (e) {},
-	});
-}
+let cconsole = console.info;
+Object.defineProperty(console, "log", {
+	configurable: true,
+	get: function () {
+		return cconsole;
+	},
+	set: function (e) {},
+});
+
 (function () {
 	"use strict";
 	let cycle = (x) => (x == false ? undefined : x == undefined);
@@ -675,7 +664,7 @@ function dosomething_with_send(e) {
 	}
 
 	let x = from_base64s(e);
-	console.info(x);
+	console.log(x);
 	try {
 		let i = 3 + 3 * !!(x[2] & 0x80);
 		let xdiv, ydiv;
@@ -724,7 +713,7 @@ if (1 && "weboverload") {
 	("var RecordingWebSocket");
 	var oldWebSocket = window.WebSocket;
 	var ReplayWebSocket = function (a) {
-		console.info("ws creating:", a);
+		console.log("ws creating:", a);
 		if (a) a = a.replace("wss://", "ws://");
 		this.sndwo = 0;
 		if (a.indexOf("-p1.surviv.io") >= 0) {
@@ -822,17 +811,23 @@ if (1 && "weboverload") {
 	("window.WebSocket = ReplayWebSocket");
 }
 
-let oraf=window.requestAnimationFrame;
-let wast=undefined;
+let oraf = window.requestAnimationFrame;
+let wast = undefined;
 
-window.requestAnimationFrame=function(user) {
-	let temp=user;
+window.requestAnimationFrame = function (user) {
+	let temp = user;
 	function mymethod(x) {
-		if(wast==undefined) { wast=x; return user.call(this,x); }
-		let tea=(window.slowmo??1);
-		if(window.WebSocket.name!="ReplayWebSocket") tea=1;
+		if (wast == undefined) {
+			wast = x;
+			return user.call(this, x);
+		}
+		let tea = window.slowmo ?? 1;
+		if (window.WebSocket.name != "ReplayWebSocket") tea = 1;
 
-		return user.call(this,/*(x-wast)*(window.slowmo??1) + wast*/(x-wast)*tea );
-	};
-	oraf.call(this,mymethod);
+		return user.call(
+			this,
+			/*(x-wast)*(window.slowmo??1) + wast*/ (x - wast) * tea
+		);
+	}
+	oraf.call(this, mymethod);
 };
