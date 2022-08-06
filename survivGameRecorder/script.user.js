@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Surviv.io input replay recorder
 // @namespace    https://github.com/notKaiAnderson/
-// @version      1.0.4
+// @version      1.0.5
 // @description  Records lightweight game recordings, which can be reviewed with any custom mods applied
 // @author       garlic
 // @match        *://snake.io/
@@ -342,6 +342,22 @@ window.foo = function () {
 			);
 	}
 
+    function disableAutoFill() {
+        if(survivharplayerconfig.disableAutoFill) {
+            if(survivharplayerconfig.xmlovr) return;
+            survivharplayerconfig.xmlovr=true;
+            let oldsend=XMLHttpRequest.prototype.send;
+            XMLHttpRequest.prototype.send = function (...args){
+                if(survivharplayerconfig.disableAutoFill
+                   && typeof args[0]=="string"
+                   && args[0].startsWith('{"version":') ) {
+                    args[0]=args[0].replace('"autoFill":true','"autoFill":false');
+                }
+                return oldsend.apply(this,args);
+            };
+        }
+    }
+
 	function selmodech(tt, event, ename) {
 		if (ename == "change") {
 			if (tt.value == "Tab/untab") {
@@ -363,8 +379,22 @@ window.foo = function () {
 					window.zzpseudoalert("silly pseudo 3d is now: ENABLED");
 				}
 				tt.selectedIndex = tt.prevselectedIndex;
-				return;
+                return;
 			}
+            if(tt.selectedIndex == 7) {
+				if (
+					(survivharplayerconfig.disableAutoFill = !survivharplayerconfig.disableAutoFill) ===
+					false
+				) {
+					disableAutoFill();
+					window.zzpseudoalert("no autofill override: DISABLED");
+				} else {
+					disableAutoFill();
+					window.zzpseudoalert("no autofill override: ENABLED");
+				}
+				tt.selectedIndex = tt.prevselectedIndex;
+                return;
+            }
 			tt.prevselectedIndex = tt.selectedIndex;
 			if (tt.selectedIndex == 0) {
 				if (window.WebSocket.name == "ReplayWebSocket")
@@ -437,7 +467,7 @@ window.foo = function () {
       text-align: center;
     `;
 	tt.innerHTML =
-		"<option>Record</option><option>Replay recent</option><option>Replay from file</option><option>Replay from prompt</option><option>Tab/untab</option><option>save har log</option><option>silly 3d toggle</option>";
+		"<option>Record</option><option>Replay recent</option><option>Replay from file</option><option>Replay from prompt</option><option>Tab/untab</option><option>save har log</option><option>silly 3d toggle</option><option>disable autofill toggle</option>";
 	let captt = tt;
 	tt.onchange = (e) => selmodech(captt, e, "change");
 	tt.onclick = (e) => selmodech(captt, e, "click");
@@ -806,4 +836,3 @@ window.requestAnimationFrame=function(user) {
 	};
 	oraf.call(this,mymethod);
 };
-
