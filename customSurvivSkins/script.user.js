@@ -65,97 +65,24 @@ const addBorder = (id) => getEle(`#${id}`).classList.add("active");
 const injectCss = (css) => (document.head.innerHTML += `<style>${css}</style>`);
 const imgToUrl = (type, img) =>
 	`https://surviv.io/img/${type}/${img.slice(0, -4)}.svg`;
-const backUpDeafultSkin = () => (skins.defaultSkin = { ...skins.outfitBase });
+const backUpDeafultSkin = () =>
+	(skins.defaultSkin = { ...skins.outfitBase, rarity: 10 });
 
-// if you want to add a skin to the script add it below
-const skinsArr = [
-	"defaultSkin",
-	"outfitChewieCheese",
-	"outfitSwords",
-	"outfitScarween",
-	"outfitH2Oh",
-	"outfitSoapPods",
-	"outfitTomatoandCheese",
-	"outfitHowPita-ful",
-	"outfitHopelessRamen-tic",
-	"outfitColorPalette",
-	"outfitDragonTails",
-	"outfitCosmicBlue",
-	"outfitJuleVerny",
-	"outfitNorseCode",
-	"outfitDigiturt",
-	"outfitStreetArt",
-	"outfitGhoulFire",
-	"outfitGaudisque",
-	"outfitMelonWater",
-	"outfitStarryNight",
-	"outfitEyes-T",
-	"outfitBlueZone",
-	"outfitKingGalaxy",
-	"outfitBraaains",
-	"outfitILavaYou",
-	"outfitStumpd",
-	"outfitEggnite",
-	"outfitTiki",
-	"outfitMachoLucha2",
-	"outfitCalaca",
-	"outfitTipTheScales",
-	"outfitAvocadoh",
-	"outfitChromesis",
-	"outfitBoet",
-	"outfitFireball",
-	"outfitMagmatic",
-	"outfitPurpleMecha",
-	"outfitMecha",
-	"outfitDiamondy",
-	"outfitAstronaut",
-	"outfitLasrDisk",
-	"outfitCrusader",
-	"outfitBlueMecha",
-	"outfitSnowman",
-	"outfitChritstmasTree",
-	"outfitGrinch",
-	"outfitGingerbread",
-	"outfitEventHorizon",
-	"outfitMod",
-	"outfitDev",
-	"outfitMojo",
-	"outfitGiraffe",
-	"outfitUrbanCamo",
-	"outfitBlueLava",
-	"outfitMango",
-	"outfitBengal",
-	"outfitUnderbrush",
-	"outfitViper",
-	"outfitGeometric",
-	"outfitMilitary",
-	"outfitClaymore",
-	"outfitSunset",
-	"outfitSplotchfest",
-	"outfitRedLeader",
-	"outfitWoodFire",
-	"outfitHoldinHide",
-	"outfitDisasteroid",
-	"outfitBluntRazor",
-	"outfitRuppert",
-	"outfitGreenTeaRex",
-	"outfitTribeMask",
-	"outfitPhoebonachi",
-	"outfitTribeShield",
-	"outfitMultiTusking",
-	"outfitTirelessly",
-	"outfitBrontoChop",
-	"outfitTunelSun",
-	"outfitHue-dini",
-	"outfitBombyman",
-	"outfitSunriseBlvd",
-	"outfitIdDie4U",
-	"outfitIntoTheGrid",
-	"outfitToontooine",
-	"outfitBitplosion",
-	"outfitIts-me-coin",
-	"outfitMaxAttack",
-];
+let skinsArr = getSkinsByRarity(2);
+
+function getSkinsByRarity(rarity) {
+	let tempArr = [];
+	Object.keys(skins).forEach((skin) => {
+		if (!skins[skin]?.rarity) return;
+		if (skins[skin].rarity < rarity) return;
+		tempArr.push(skin);
+	});
+
+	backUpDeafultSkin();
+	tempArr.push("defaultSkin");
+
+	return tempArr.reverse();
+}
 
 const handsArr = [];
 // add all the availaible surviv hand skins to handsArr
@@ -236,8 +163,6 @@ injectCss(css);
 loadMainScript();
 
 function loadMainScript() {
-	backUpDeafultSkin();
-
 	const passBody = getEle(".pass-body-container");
 
 	const disableScripthtml = `
